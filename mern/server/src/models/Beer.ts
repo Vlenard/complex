@@ -1,0 +1,59 @@
+import mongoose, { Document, Schema } from "mongoose";
+import TransformSchemaOutput from "../services/TransformSchemaOutput.ts";
+
+
+export interface IBeer extends Document {
+    name: string;
+    type: "lager" | "ipa" | "apa" | "stout" | "porter";
+    note?: string;
+    rate: number;
+    alcohol: number;
+    owner: mongoose.Types.ObjectId;
+}
+
+const BeerSchema = new Schema<IBeer>(
+    {
+        name: {
+            type: String,
+            required: true,
+            trim: true,
+            unique: true,
+        },
+        type: {
+            type: String,
+            required: true,
+            enum: ["lager", "ipa", "apa", "stout", "porter"],
+        },
+        note: {
+            type: String,
+            required: false,
+        },
+        alcohol: {
+            type: Number,
+            required: true,
+            min: 1,
+        },
+        rate: {
+            type: Number,
+            required: true,
+            min: 1,
+            max: 10,
+        },
+        owner: {
+            type: Schema.Types.ObjectId,
+            ref: "User",
+            required: true,
+        },
+    },
+    {
+        timestamps: true,
+        toJSON: {
+            transform: TransformSchemaOutput,
+        },
+        toObject: {
+            transform: TransformSchemaOutput,
+        },
+    },
+);
+
+export const Beer = mongoose.model<IBeer>("Beer", BeerSchema);
