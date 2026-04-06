@@ -1,14 +1,23 @@
+import "./index.css"
 import { StrictMode } from "react"
 import { createRoot } from "react-dom/client"
-import "./index.css"
-import { ThemeProvider } from "@/components/theme-provider.tsx"
-import Router from "./Router.ts"
 import { RouterProvider } from "react-router/dom"
+import { ThemeProvider } from "@/components/theme-provider.tsx"
+import Router from "@/Router.ts"
+import AuthProvider from "@/providers/AuthProvider.tsx"
+import UserProvider from "@/providers/UserProvider.tsx"
+import HttpProvider from "@/providers/HttpProvider.tsx"
 
 createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <ThemeProvider>
-        <RouterProvider router={Router} />
-    </ThemeProvider>
-  </StrictMode>
+    <StrictMode>
+        <HttpProvider>
+            <AuthProvider>
+                <UserProvider>
+                    <ThemeProvider>
+                        <RouterProvider router={Router} />
+                    </ThemeProvider>
+                </UserProvider>
+            </AuthProvider>
+        </HttpProvider>
+    </StrictMode>
 )
