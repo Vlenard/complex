@@ -5,18 +5,15 @@ import { RouterProvider } from "react-router/dom"
 import { ThemeProvider } from "@/components/theme-provider.tsx"
 import Router from "@/Router.ts"
 import AuthProvider from "@/providers/AuthProvider.tsx"
-import UserProvider from "@/providers/UserProvider.tsx"
 import HttpProvider from "@/providers/HttpProvider.tsx"
 
 createRoot(document.getElementById("root")!).render(
     <StrictMode>
         <HttpProvider>
             <AuthProvider>
-                <UserProvider>
-                    <ThemeProvider>
-                        <RouterProvider router={Router} />
-                    </ThemeProvider>
-                </UserProvider>
+                <ThemeProvider>
+                    <RouterProvider router={Router} />
+                </ThemeProvider>
             </AuthProvider>
         </HttpProvider>
     </StrictMode>

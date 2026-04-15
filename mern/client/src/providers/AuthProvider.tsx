@@ -1,55 +1,81 @@
-import { useHttp } from "@/hooks/HttpHook";
-import { createContext, useEffect, useState, type PropsWithChildren, type FC } from "react";
+import { useState, type PropsWithChildren, type FC, useEffect, use } from "react";
+import { AuthContext, type AuthStatus, type SignInPayload, type SignUpPayload, type AuthResponse } from "@/contexts/AuthContext";
+import { HttpContext } from "@/contexts/HttpContext";
 
-type AuthStatus = "authenticated" | "unauthenticated" | "loading";
-type SignInPayload = { email: string; password: string };
-type SignUpPayload = { name: string; email: string; password: string };
-type AuthResponse = { errors?: string[] };
-type AuthContextType = {
+type AuthState = {
     status: AuthStatus;
     token: string | null;
-    signIn: (payload: SignInPayload) => Promise<AuthResponse>;
-    signUp: (payload: SignUpPayload) => Promise<AuthResponse>;
-    signOut: () => void;
 };
 
 const TOKEN_KEY = "auth_token";
-const AuthContext = createContext<AuthContextType>({} as AuthContextType)
 
 const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
 
-    const http = useHttp();
+    const http = use(HttpContext);
 
-    const [status, setStatus] = useState<AuthStatus>("unauthenticated");
-    const [token, setToken] = useState<string | null>(localStorage.getItem(TOKEN_KEY));
+    const [authState, setAuthState] = useState<AuthState>(() => {
+        const token = localStorage.getItem(TOKEN_KEY);
+        return token ? { status: "authenticated", token } : { status: "unauthenticated", token: null };
+    });
 
     const signIn = async (payload: SignInPayload): Promise<AuthResponse> => {
+        const response = await http.fetch("/auth/sign-in", {
+            method: "POST",
+            body: JSON.stringify(payload),
+        });
 
+        const data = await response.json();
 
+        if (data.token) {
+            setAuthState({
+                status: "authenticated",
+                token: data.token,
+            });
+            return {};
+        }
 
-        return { };
+        return {
+            errors: [data.message]
+        };
     };
 
     const signUp = async (payload: SignUpPayload): Promise<AuthResponse> => {
+        const response = await http.fetch("/auth/sign-up", {
+            method: "POST",
+            body: JSON.stringify(payload),
+        });
 
+        const data = await response.json();
 
+        if (data.token) {
+            setAuthState({
+                status: "authenticated",
+                token: data.token,
+            });
+            return {};
+        }
 
-        return { };
+        return {
+            errors: [data.message]
+        };
     };
 
     const signOut = () => {
-        setToken(null);
-        setStatus("unauthenticated");
+        setAuthState({
+            status: "unauthenticated",
+            token: null,
+        });
     };
 
     useEffect(() => {
-
-    }, [token]);
+        localStorage.setItem(TOKEN_KEY, authState.token ?? "");
+        http.setBearerToken(authState.token ?? "");
+    }, [authState.token, http]);
 
     return (
         <AuthContext.Provider value={{
-            status,
-            token,
+            status: authState.status,
+            token: authState.token,
             signIn,
             signUp,
             signOut,
@@ -59,5 +85,4 @@ const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
     );
 };
 
-export { AuthContext };
 export default AuthProvider;

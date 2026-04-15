@@ -1,13 +1,7 @@
-import { createContext, useState, type Dispatch, type SetStateAction, type FC, type PropsWithChildren } from "react";
+import { useState, type FC, type PropsWithChildren } from "react";
+import { HttpContext, type Fetcher } from "../contexts/HttpContext";
 
-type Fetcher = (url: string, options: Pick<RequestInit, "method" | "body">) => Promise<Response>;
-type HttpContextType = {
-    fetch: Fetcher;
-    setBearerToken:  Dispatch<SetStateAction<string>>;
-};
-
-const API_URL = "http://localhost:3000";
-const HttpContext = createContext<HttpContextType>({} as HttpContextType);
+const API_URL = "http://localhost:3000/api";
 
 const HttpProvider: FC<PropsWithChildren> = ({ children }) => {
 
@@ -18,7 +12,7 @@ const HttpProvider: FC<PropsWithChildren> = ({ children }) => {
             ...options,
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": `Bearer ${bearerToken}`
+                "Authorization": bearerToken ? `Bearer ${bearerToken}` : ""
             }
         });
     };

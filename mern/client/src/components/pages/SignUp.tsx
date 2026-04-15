@@ -2,7 +2,7 @@ import { AuthContext } from "@/contexts/AuthContext";
 import { use, useEffect, useState, type FC, type SubmitEventHandler } from "react"
 import { useNavigate } from "react-router";
 
-const SignIn: FC = () => {
+const SignUp: FC = () => {
 
     const auth = use(AuthContext);
     const navigate = useNavigate();
@@ -13,8 +13,9 @@ const SignIn: FC = () => {
         e.preventDefault();
         const form = e.target as HTMLFormElement;
         const email = form.email.value;
+        const name = form.name.value;
         const password = form.password.value;
-        const response = await auth.signIn({ email, password });
+        const response = await auth.signUp({ email, name, password });
         if (response.errors) {
             setErrors(response.errors);
         }
@@ -28,22 +29,24 @@ const SignIn: FC = () => {
 
     return (
         <div>
-            <h2>Sign In</h2>
+            <h1>Sign Up</h1>
             <br />
             <hr />
             <br />
-            <form onSubmit={handleSubmit} className="ps-5">
-                <input type="text" name="email" placeholder="Email" className="border p-1"/>
+            <form onSubmit={handleSubmit} className="ps-4">
+                <input type="email" name="email" placeholder="Email" required className="border p-1"/>
                 <br />
                 <br />
-                <input type="password" name="password" placeholder="Password" className="border p-1"/>
+                <input type="text" name="name" placeholder="Name" required className="border p-1"/>
                 <br />
                 <br />
-                <button type="submit">Sign In</button>
-                {errors.length > 0 && <div>{errors.join(", ")}</div>}
+                <input type="password" name="password" placeholder="Password" required className="border p-1"/>
+                <br />
+                <br />
+                <button type="submit">Sign Up</button>
             </form>
         </div>
-    )
-};
+    );
+}
 
-export default SignIn;
+export default SignUp
