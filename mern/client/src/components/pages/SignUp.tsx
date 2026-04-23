@@ -13,7 +13,7 @@ const SignUp: FC = () => {
         e.preventDefault();
         const form = e.target as HTMLFormElement;
         const email = form.email.value;
-        const name = form.name.value;
+        const name = form.name.valueOf();
         const password = form.password.value;
         const response = await auth.signUp({ email, name, password });
         if (response.errors) {
@@ -44,6 +44,7 @@ const SignUp: FC = () => {
                 <br />
                 <br />
                 <button type="submit">Sign Up</button>
+                {errors.length > 0 && <div>{errors.map((error, index) => <div key={index}>{error}</div>)}</div>}
             </form>
         </div>
     );

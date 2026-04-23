@@ -1,61 +1,57 @@
-import { use, useEffect, useMemo, useState, type FC, type PropsWithChildren } from "react"
-import type { UserModel } from "@/models/UserModel"
+import { use, useEffect, useState, type FC, type PropsWithChildren } from "react";
+import { useNavigate } from "react-router";
+import type { UserModel } from "@/models/UserModel";
 import { AuthContext } from "@/contexts/AuthContext";
 import { UserContext } from "@/contexts/UserContext";
 import { HttpContext } from "@/contexts/HttpContext";
 
 const UserProvider: FC<PropsWithChildren> = ({ children }) => {
+  const auth = use(AuthContext);
+  const http = use(HttpContext);
+  const navigate = useNavigate();
 
-    const auth = use(AuthContext);
-    const http = use(HttpContext);
+  const [user, setUser] = useState<UserModel | null>(null);
 
-    const [user, setUser] = useState<UserModel | null>(null);
+  useEffect(() => {
+    if (auth.status !== "authenticated") {
+      setUser(null);
+      return;
+    }
 
-    const fetchUser = async (controller: AbortController) => {
-        try {
-            const response = await http.fetch("/user", {
-                method: "GET",
-                signal: controller.signal
-            });
+    const controller = new AbortController();
 
-            setUser(await response.json());
-        } catch (error: any) {
-            if (error.name === "AbortError") {
-                return;
-            }
-            console.error("Failed to fetch user:", error);
-        }
-    };
+    const fetchUser = async () => {
+      try {
+        const response = await http.fetch("/user", {
+          method: "GET",
+          signal: controller.signal,
+        });
 
-    const clearUser = () => {
-        setUser(null);
-    };
-
-    useEffect(() => {
-        const controller = new AbortController();
-
-        if (auth.status === "authenticated") {
-            if (user === null) {
-                fetchUser(controller);
-            }
-        } else {
-            if (user !== null) {
-                clearUser();
-            }
+        if (!response.ok) {
+          throw new Error("Failed to fetch user");
         }
 
-        return () => {
-            // This cancels the request if the component unmounts
-            // or if auth.status changes before the fetch finishes.
-            controller.abort();
-        };
-    }, [auth.status, http]);
+        const userData: UserModel = await response.json();
+        setUser(userData);
+      } catch (error: any) {
+        if (error.name !== "AbortError") {
+          console.error("User fetch failed:", error);
+          setUser(null);
+          navigate("/sign-in");
+        }
+      }
+    };
 
-    return (
-        <UserContext.Provider value={{ user, setUser }}>
-            {children}
-        </UserContext.Provider>
-    );
-}
+    fetchUser();
+
+    return () => controller.abort();
+  }, [auth.status, http, navigate]);
+
+  return (
+    <UserContext.Provider value={{ user }}>
+      {children}
+    </UserContext.Provider>
+  );
+};
 
 export default UserProvider;

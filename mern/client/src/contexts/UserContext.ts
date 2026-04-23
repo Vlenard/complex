@@ -3,7 +3,7 @@ import { createContext } from "react";
 
 type UserContextType = {
     user: UserModel | null;
-    setters: {
+    setters?: {
         setEmail: (email: string) => void;
         setPassword: (password: string) => void;
         setName: (name: string) => void;

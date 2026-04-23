@@ -27,6 +27,7 @@ const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
         const data = await response.json();
 
         if (data.token) {
+            localStorage.setItem(TOKEN_KEY, data.token);
             setAuthState({
                 status: "authenticated",
                 token: data.token,
@@ -48,6 +49,7 @@ const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
         const data = await response.json();
 
         if (data.token) {
+            localStorage.setItem(TOKEN_KEY, data.token);
             setAuthState({
                 status: "authenticated",
                 token: data.token,
@@ -68,7 +70,6 @@ const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
     };
 
     useEffect(() => {
-        localStorage.setItem(TOKEN_KEY, authState.token ?? "");
         http.setBearerToken(authState.token ?? "");
     }, [authState.token, http]);
 

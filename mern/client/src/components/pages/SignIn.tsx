@@ -22,7 +22,7 @@ const SignIn: FC = () => {
 
     useEffect(() => {
         if (auth.status === "authenticated") {
-            navigate("/");
+            navigate("/app");
         }
     }, [auth.status, navigate]);
 
