@@ -14,38 +14,38 @@ const UserProvider: FC<PropsWithChildren> = ({ children }) => {
 
   useEffect(() => {
     if (auth.status !== "authenticated") {
-      setUser(null);
-      return;
+        setUser(null);
+        return;
     }
 
     const controller = new AbortController();
 
     const fetchUser = async () => {
-      try {
-        const response = await http.fetch("/user", {
-          method: "GET",
-          signal: controller.signal,
-        });
+        try {
+            const response = await http.fetch("/user", {
+                method: "GET",
+                signal: controller.signal,
+            });
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch user");
-        }
+            if (!response.ok) {
+                throw new Error("Failed to fetch user");
+            }
 
-        const userData: UserModel = await response.json();
-        setUser(userData);
-      } catch (error: any) {
-        if (error.name !== "AbortError") {
-          console.error("User fetch failed:", error);
-          setUser(null);
-          navigate("/sign-in");
+            const userData: UserModel = await response.json();
+            setUser(userData);
+        } catch (error: any) {
+            if (error.name !== "AbortError") {
+                console.error("User fetch failed:", error);
+                setUser(null);
+                navigate("/sign-in");
+            }
         }
-      }
     };
 
     fetchUser();
 
     return () => controller.abort();
-  }, [auth.status, http, navigate]);
+  }, [auth.status]);
 
   return (
     <UserContext.Provider value={{ user }}>

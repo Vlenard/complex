@@ -98,7 +98,7 @@ const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
 
     useEffect(() => {
         http.setBearerToken(authState.token ?? "");
-    }, [authState.token, http]);
+    }, [authState.token]);
 
     return (
         <AuthContext.Provider value={{
