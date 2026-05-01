@@ -9,7 +9,6 @@ const HttpProvider: FC<PropsWithChildren> = ({ children }) => {
 
     const fetchData: Fetcher = async (url, options) => {
         try {
-            console.log(bearerToken)
             const response = await fetch(API_URL + url, {
                 ...options,
                 headers: {
