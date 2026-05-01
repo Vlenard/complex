@@ -1,18 +1,21 @@
-import { type FC } from "react";
+import { use, type FC } from "react";
 import { NavLink } from "react-router";
 import img from "@/assets/landing.png"
+import { I18nContext } from "@/contexts/I18nContext";
 
 const Landing: FC = () => {
+
+    const i18n = use(I18nContext);
 
     return (
         <div className="flex min-h-screen">
             <div className="flex flex-col justify-center items-center flex-1">
                 <div>
                     <h1 className="text-8xl gradiant-text uppercase italic pe-8 -translate-x-4">Rbeer</h1>
-                    <p className="mt-5">Rate your beers</p>
+                    <p className="mt-5">{i18n.localization.slogen}</p>
                     <div className="flex space-x-2 mt-5">
-                        <NavLink to="/sign-in" className="px-4 py-2 bg-amber-400 text-white rounded-2xl">Sign In</NavLink>
-                        <NavLink to="/sign-up" className="px-4 py-2 bg-amber-400 text-white rounded-2xl">Sign Up</NavLink>
+                        <NavLink to="/sign-in" className="px-4 py-2 bg-amber-400 text-white rounded-2xl">{i18n.localization.signIn}</NavLink>
+                        <NavLink to="/sign-up" className="px-4 py-2 bg-amber-400 text-white rounded-2xl">{i18n.localization.signUp}</NavLink>
                     </div>
                 </div>
             </div>
