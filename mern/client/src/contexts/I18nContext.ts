@@ -8,6 +8,7 @@ export enum Language {
 export type I18nContextType = {
     language: Language;
     setLanguage: (language: Language) => void;
+    getLanguageString: (language: Language) => string;
     localization: Record<string, string>;
     isLoading: boolean;
 }

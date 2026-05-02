@@ -1,6 +1,8 @@
 {
-    "slogen": "Rate your favorite beers",
+    "$schema": "./schema.json",
+    "slogan": "Rate your favorite beers",
     "signIn": "Sign In",
     "signUp": "Sign Up",
-    "signOut": "Sign Out"
+    "signOut": "Sign Out",
+    "languageSettings": "Language Settings"
 }
