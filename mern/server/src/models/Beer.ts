@@ -8,6 +8,7 @@ export interface IBeer extends Document {
     note?: string;
     rate: number;
     alcohol: number;
+    url: string;
     owner: mongoose.Types.ObjectId;
 }
 
@@ -38,6 +39,11 @@ const BeerSchema = new Schema<IBeer>(
             required: true,
             min: 1,
             max: 10,
+        },
+        url: {
+            type: String,
+            required: true,
+            trim: true,
         },
         owner: {
             type: Schema.Types.ObjectId,

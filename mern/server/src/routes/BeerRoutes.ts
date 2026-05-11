@@ -5,9 +5,10 @@ import GetBeers from "../controllers/beer/GetBeers.ts";
 import UpdateBeer from "../controllers/beer/UpdateBeer.ts";
 import GetBeer from "../controllers/beer/GetBeer.ts";
 import type { Controller } from "../utils/Types.ts";
+import { FileUploadMiddleware } from "../middlewares/FileUploadMiddleware.ts";
 const BeerRoutes = express.Router();
 
-BeerRoutes.post("/", CreateBeer as Controller);
+BeerRoutes.post("/", FileUploadMiddleware.single("url"), CreateBeer as Controller);
 
 BeerRoutes.get("/", GetBeers as Controller);
 

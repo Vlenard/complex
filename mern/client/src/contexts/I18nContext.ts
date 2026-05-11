@@ -1,9 +1,11 @@
 import { createContext } from "react";
 
-export enum Language {
-    English = "en",
-    Hungarian = "hu",
-}
+export const Language = {
+  English: 'en',
+  Hungarian: 'hu',
+} as const;
+
+export type Language = typeof Language[keyof typeof Language];
 
 export type I18nContextType = {
     language: Language;

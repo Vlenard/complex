@@ -3,14 +3,16 @@ import type { BeerRequest } from "../../interfaces/BeerRequest";
 import { Beer } from "../../models/Beer.ts";
 import { User } from "../../models/User.ts";
 
-/*
- * Create a beer
- * Path(POST: api/beer/)
- */
 const CreateBeer = async (req: BeerRequest, res: Response): Promise<void> => {
     try {
+        if (!req.file) {
+             res.status(400).json({ message: "Image is required!" }).end();
+             return;
+        }
+
         const newBeer = await Beer.create({
             ...req.body,
+            url: req.file.path,
             owner: req.user.id,
         });
 
