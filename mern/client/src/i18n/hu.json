@@ -1,8 +1,14 @@
 {
-    "$schema": "schema.json",
     "slogan": "Értékeld a kedvenc söreidet",
     "signIn": "Bejelentkezés",
     "signUp": "Regisztráció",
     "signOut": "Kijelentkezés",
-    "languageSettings": "Nyelv beállítások"
+    "languageSettings": "Nyelv beállítások",
+    "signInDescription": "Kérem, jelentkezzen be",
+    "signUpDescription": "Kérem, regisztráljon",
+    "signInButtonText": "Bejelentkezés",
+    "signUpButtonText": "Regisztráció",
+    "password": "Jelszó",
+    "confirmPassword": "Jelszó megerősítése",
+    "passwordsDoNotMatch": "Jelszavak nem egyeznek"
 }

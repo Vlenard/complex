@@ -7,6 +7,7 @@ import Router from "@/Router.ts"
 import AuthProvider from "@/providers/AuthProvider.tsx"
 import HttpProvider from "@/providers/HttpProvider.tsx"
 import I18nProvider from "./providers/I18nProvider"
+import { Toaster } from "./components/ui/sonner"
 
 createRoot(document.getElementById("root")!).render(
     <StrictMode>
@@ -19,5 +20,6 @@ createRoot(document.getElementById("root")!).render(
                 </I18nProvider>
             </AuthProvider>
         </HttpProvider>
+        <Toaster />
     </StrictMode>
 )

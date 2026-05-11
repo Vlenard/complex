@@ -1,8 +1,14 @@
 {
-    "$schema": "./schema.json",
     "slogan": "Rate your favorite beers",
     "signIn": "Sign In",
     "signUp": "Sign Up",
     "signOut": "Sign Out",
-    "languageSettings": "Language Settings"
+    "languageSettings": "Language Settings",
+    "signInDescription": "Please sign in to continue",
+    "signUpDescription": "Please sign up to continue",
+    "signInButtonText": "Sign In",
+    "signUpButtonText": "Sign Up",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "passwordsDoNotMatch": "Passwords do not match"
 }

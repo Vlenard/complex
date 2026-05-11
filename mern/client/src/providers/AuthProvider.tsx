@@ -2,6 +2,7 @@ import { useState, type PropsWithChildren, type FC, useEffect, use } from "react
 import { AuthContext, type AuthStatus, type SignInPayload, type SignUpPayload, type AuthResponse } from "@/contexts/AuthContext";
 import { HttpContext } from "@/contexts/HttpContext";
 import { jwtDecode } from "jwt-decode";
+import { toast } from "sonner";
 
 type AuthState = {
     status: AuthStatus;
@@ -48,44 +49,46 @@ const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
             : { status: "unauthenticated", token: null };
     });
 
-    const signIn = async (payload: SignInPayload): Promise<AuthResponse> => {
-        const response = await http.fetch("/auth/sign-in", {
-            method: "POST",
-            body: JSON.stringify(payload),
-        });
-
-        const data = await response.json();
-
-        if (data.token) {
-            localStorage.setItem(TOKEN_KEY, data.token);
-            setAuthState({
-                status: "authenticated",
-                token: data.token,
+    const signIn = async (payload: SignInPayload): Promise<void> => {
+        try {
+            const response = await http.fetch("/auth/sign-in", {
+                method: "POST",
+                body: JSON.stringify(payload),
             });
-            return {};
-        }
 
-        return { errors: [data.message] };
+            const data = await response.json();
+            if (data.token) {
+                localStorage.setItem(TOKEN_KEY, data.token);
+                setAuthState({
+                    status: "authenticated",
+                    token: data.token,
+                });
+            }
+        } catch (error) {
+            console.log(error)
+            toast.error("Failed to sign in");
+        }
     };
 
-    const signUp = async (payload: SignUpPayload): Promise<AuthResponse> => {
-        const response = await http.fetch("/auth/sign-up", {
-            method: "POST",
-            body: JSON.stringify(payload),
-        });
-
-        const data = await response.json();
-
-        if (data.token) {
-            localStorage.setItem(TOKEN_KEY, data.token);
-            setAuthState({
-                status: "authenticated",
-                token: data.token,
+    const signUp = async (payload: SignUpPayload): Promise<void> => {
+        try {
+            const response = await http.fetch("/auth/sign-up", {
+                method: "POST",
+                body: JSON.stringify(payload),
             });
-            return {};
-        }
 
-        return { errors: [data.message] };
+            const data = await response.json();
+            if (data.token) {
+                localStorage.setItem(TOKEN_KEY, data.token);
+                setAuthState({
+                    status: "authenticated",
+                    token: data.token,
+                });
+            }
+        } catch (error) {
+            toast.error("Failed to sign up");
+            console.log(error)
+        }
     };
 
     const signOut = () => {

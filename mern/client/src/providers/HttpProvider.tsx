@@ -8,24 +8,20 @@ const HttpProvider: FC<PropsWithChildren> = ({ children }) => {
     const [bearerToken, setBearerToken] = useState("");
 
     const fetchData: Fetcher = async (url, options) => {
-        try {
-            const response = await fetch(API_URL + url, {
-                ...options,
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": bearerToken ? `Bearer ${bearerToken}` : "",
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error(`Error: ${response.status} ${response.statusText}`);
+        const response = await fetch(API_URL + url, {
+            ...options,
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": bearerToken ? `Bearer ${bearerToken}` : "",
             }
+        });
 
-            return response;
-        } catch (error) {
-            console.error("Fetch failed:", error);
-            throw error;
+        if (!response.ok) {
+            const data = await response.json();
+            throw new Error(data.message || "Something went wrong");
         }
+
+        return response;
     };
 
     return (
