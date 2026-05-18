@@ -1,6 +1,7 @@
 import { useState, type PropsWithChildren, type FC, useEffect, use } from "react";
-import { AuthContext, type AuthStatus, type SignInPayload, type SignUpPayload, type AuthResponse } from "@/contexts/AuthContext";
+import { AuthContext, type AuthStatus, type SignInPayload, type SignUpPayload } from "@/contexts/AuthContext";
 import { HttpContext } from "@/contexts/HttpContext";
+import { I18nContext } from "@/contexts/I18nContext";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "sonner";
 
@@ -12,6 +13,7 @@ type AuthState = {
 const TOKEN_KEY = "auth_token";
 
 const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
+    const i18n = use(I18nContext);
     const http = use(HttpContext);
 
     const getValidToken = (): string | null => {
@@ -29,7 +31,7 @@ const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
 
             const currentTime = Math.floor(Date.now() / 1000);
             if (decoded.exp < currentTime) {
-                console.warn("Token has expired.");
+                toast.warning(i18n.localization.tokenExpired);
                 localStorage.removeItem(TOKEN_KEY);
                 return null;
             }
@@ -66,7 +68,7 @@ const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
             }
         } catch (error) {
             console.log(error)
-            toast.error("Failed to sign in");
+            toast.error(i18n.localization.failedToSignIn);
         }
     };
 
@@ -86,7 +88,7 @@ const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
                 });
             }
         } catch (error) {
-            toast.error("Failed to sign up");
+            toast.error(i18n.localization.failedToSignUp);
             console.log(error)
         }
     };

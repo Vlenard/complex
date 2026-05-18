@@ -13,7 +13,7 @@ export const LangSelector = () => {
 
     return (
         <Select onValueChange={handleLanguageChange} defaultValue={i18n.language}>
-            <SelectTrigger className="w-28 border-none">
+            <SelectTrigger className="w-32 border-none p-6">
                 <SelectValue />
             </SelectTrigger>
             <SelectContent>

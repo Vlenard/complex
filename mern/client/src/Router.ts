@@ -1,7 +1,8 @@
 import { createBrowserRouter } from "react-router";
 import Home from "@/components/pages/Home";
-import Landing from "./components/pages/Landing";
-import UserLayout from "./components/layouts/UserLayout";
+import Landing from "@/components/pages/Landing";
+import AppLayout from "@/components/layouts/AppLayout";
+import Beer from "@/components/pages/Beer";
 
 const Router = createBrowserRouter([
     {
@@ -10,9 +11,17 @@ const Router = createBrowserRouter([
     },
     {
         path: "/app",
-        Component: UserLayout,
+        Component: AppLayout,
         children: [
-            { index: true, Component: Home },
+            {
+                index: true,
+                Component: Home,
+
+            },
+            {
+                path: "beer/:id",
+                Component: Beer
+            }
         ]
     },
     {

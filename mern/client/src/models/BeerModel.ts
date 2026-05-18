@@ -5,4 +5,5 @@ export type BeerModel = {
     rate: number;
     alcohol: number;
     owner: string;
+    url: string;
 };

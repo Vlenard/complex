@@ -10,5 +10,12 @@
     "signUpButtonText": "Regisztráció",
     "password": "Jelszó",
     "confirmPassword": "Jelszó megerősítése",
-    "passwordsDoNotMatch": "Jelszavak nem egyeznek"
+    "passwordsDoNotMatch": "Jelszavak nem egyeznek",
+    "searchBeer": "Sör keresés...",
+    "tokenExpired": "Lejárt a tokened",
+    "failedToSignIn": "Sikertelen bejelentkezés",
+    "failedToSignUp": "Sikertelen regisztráció",
+    "failedToFetchBeerList": "Nem sikerült betölteni a söröket",
+    "modify": "Szerkesztés",
+    "add": "Hozzáadás"
 }

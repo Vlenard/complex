@@ -3,7 +3,7 @@ import UserProvider from "@/providers/UserProvider";
 import { use, useEffect, type FC } from "react";
 import { Outlet, useNavigate } from "react-router";
 
-const UserLayout: FC = () => {
+const AppLayout: FC = () => {
 
     const auth = use(AuthContext);
     const navigate = useNavigate();
@@ -25,4 +25,4 @@ const UserLayout: FC = () => {
     );
 };
 
-export default UserLayout;
+export default AppLayout;

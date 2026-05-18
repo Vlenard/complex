@@ -54,7 +54,7 @@ const SignIn: FC = () => {
                                       type="email"
                                       placeholder="valami@gmail.com"
                                       required
-                                      className="py-6 px-6"
+                                      className="p-6"
                                   />
                               </div>
                               <div className="grid gap-2">
@@ -65,7 +65,7 @@ const SignIn: FC = () => {
                                       id="password"
                                       type="password"
                                       required
-                                      className="py-6 px-6"
+                                      className="p-6"
                                   />
                               </div>
                             </div>

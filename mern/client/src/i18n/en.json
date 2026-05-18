@@ -10,5 +10,12 @@
     "signUpButtonText": "Sign Up",
     "password": "Password",
     "confirmPassword": "Confirm Password",
-    "passwordsDoNotMatch": "Passwords do not match"
+    "passwordsDoNotMatch": "Passwords do not match",
+    "searchBeer": "Search beer...",
+    "tokenExpired": "Token has expired",
+    "failedToSignIn": "Failed to sign in",
+    "failedToSignUp": "Failed to sign up",
+    "failedToFetchBeerList": "Failed to load beers",
+    "modify": "Modify",
+    "add": "Add"
 }
