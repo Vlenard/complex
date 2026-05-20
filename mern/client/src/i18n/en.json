@@ -17,5 +17,7 @@
     "failedToSignUp": "Failed to sign up",
     "failedToFetchBeerList": "Failed to load beers",
     "modify": "Modify",
-    "add": "Add"
+    "add": "Add",
+    "failedToDeleteBeer": "Failed to delete beer",
+    "beerDeleted": "Beer deleted"
 }

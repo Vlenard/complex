@@ -1,8 +1,6 @@
 import { createBrowserRouter } from "react-router";
-import Home from "@/components/pages/Home";
 import Landing from "@/components/pages/Landing";
 import AppLayout from "@/components/layouts/AppLayout";
-import Beer from "@/components/pages/Beer";
 
 const Router = createBrowserRouter([
     {
@@ -15,12 +13,25 @@ const Router = createBrowserRouter([
         children: [
             {
                 index: true,
-                Component: Home,
+                lazy: async () => {
+                    const Component = (await import("./components/pages/Home")).default;
+                    return { Component };
+                },
 
             },
             {
                 path: "beer/:id",
-                Component: Beer
+                lazy: async () => {
+                    const Component = (await import("./components/pages/Beer")).default;
+                    return { Component };
+                }
+            },
+            {
+                path: "beer/create",
+                lazy: async () => {
+                    const Component = (await import("./components/pages/CreateBeer")).default;
+                    return { Component };
+                }
             }
         ]
     },

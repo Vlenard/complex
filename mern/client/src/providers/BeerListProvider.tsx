@@ -25,6 +25,20 @@ const BeerListProvider: FC<PropsWithChildren> = (props) => {
         setBeerListState((prev) => ({ ...prev, query }));
     };
 
+    const deleteBeer = async (id: string) => {
+        const response = await http.fetch(`/beer/${id}`, {
+            method: "DELETE",
+        });
+
+        if (!response.ok) {
+            toast.error(i18n.localization.failedToDeleteBeer);
+            return;
+        }
+
+        setBeerListState((prev) => ({ ...prev, list: prev.list.filter(beer => beer.id !== id) }));
+        toast.info(i18n.localization.beerDeleted);
+    };
+
     useEffect(() => {
         const controller = new AbortController();
         const { signal } = controller;
@@ -75,6 +89,7 @@ const BeerListProvider: FC<PropsWithChildren> = (props) => {
             query: beerListState.query,
             isLoading: beerListState.isLoading,
             setQuery,
+            deleteBeer,
         }}>
             {props.children}
         </BeerListContext.Provider>

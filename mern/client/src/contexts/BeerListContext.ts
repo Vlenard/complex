@@ -6,6 +6,7 @@ export type BeerListContextType = {
     isLoading: boolean;
     query: Pick<BeerModel, "name">;
     setQuery: (query: Pick<BeerModel, "name">) => void;
+    deleteBeer: (id: string) => void;
 };
 
 export const BeerListContext = createContext<BeerListContextType>({} as BeerListContextType);

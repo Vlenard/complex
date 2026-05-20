@@ -17,5 +17,7 @@
     "failedToSignUp": "Sikertelen regisztráció",
     "failedToFetchBeerList": "Nem sikerült betölteni a söröket",
     "modify": "Szerkesztés",
-    "add": "Hozzáadás"
+    "add": "Hozzáadás",
+    "failedToDeleteBeer": "Nem sikerült törölni a sört",
+    "beerDeleted": "Sör törölve"
 }
