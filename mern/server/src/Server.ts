@@ -11,6 +11,9 @@ BootstrapAndStart(app => {
     // Parse JSON bodies
     app.use(express.json());
 
+    // Serve static files from the storage directory
+    app.use("/storage", express.static("storage"));
+
     //Nodes of api routes
     app.use("/api", NodeRouter);
 

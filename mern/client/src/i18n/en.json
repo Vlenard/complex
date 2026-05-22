@@ -19,5 +19,19 @@
     "modify": "Modify",
     "add": "Add",
     "failedToDeleteBeer": "Failed to delete beer",
-    "beerDeleted": "Beer deleted"
+    "beerDeleted": "Beer deleted",
+    "successfulSave": "Successful save!",
+    "errorDuringSave": "An error occurred during save.",
+    "networkError": "A network error occurred.",
+    "picture": "Picture",
+    "selectPictureToUpload": "Select a picture to upload.",
+    "name": "Name",
+    "type": "Type",
+    "selectType": "Select a type",
+    "alcoholContent": "Alcohol content (%)",
+    "rate": "Rating (1-10)",
+    "noteOptional": "Note (Optional)",
+    "notePlaceholder": "Describe your impressions of the taste...",
+    "save": "Save",
+    "back": "Back"
 }

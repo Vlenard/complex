@@ -2,7 +2,7 @@ import { AuthContext } from "@/contexts/AuthContext";
 import { I18nContext } from "@/contexts/I18nContext";
 import { UserContext } from "@/contexts/UserContext";
 import { HttpContext } from "@/contexts/HttpContext";
-import { use, type FC, useState, useEffect } from "react";
+import { use, type FC, useState, useEffect, type FormEvent } from "react";
 import { Button } from "../ui/button";
 import { LangSelector } from "../ui/lang-selector";
 import { Field, FieldDescription, FieldGroup, FieldLabel } from "../ui/field";
@@ -10,6 +10,8 @@ import { Input } from "../ui/input";
 import { Plus } from "lucide-react";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "../ui/select";
 import { Textarea } from "../ui/textarea";
+import { toast } from "sonner";
+import { useNavigate } from "react-router";
 
 const CreateBeer: FC = () => {
 
@@ -17,16 +19,32 @@ const CreateBeer: FC = () => {
     const auth = use(AuthContext);
     const userctx = use(UserContext);
     const http = use(HttpContext);
+    const navigate = useNavigate();
 
     const [selectedFile, setSelectedFile] = useState(null);
     const [preview, setPreview] = useState(null);
 
-    const submit = async (e) => {
+    const submit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        const formData = new FormData(e.target);
+        const formData = new FormData(e.currentTarget);
 
+        try {
+            const response = await http.fetch("/beer/", {
+                method: "POST",
+                body: formData,
+            });
 
+            if (response.ok) {
+                const data = await response.json();
+                toast.success(i18n.localization.successfulSave);
+                navigate(`/app/beer/${data.id}`);
+            } else {
+                toast.error(i18n.localization.errorDuringSave);
+            }
+        } catch (error) {
+            toast.error(i18n.localization.networkError);
+        }
     };
 
     useEffect(() => {
@@ -50,8 +68,8 @@ const CreateBeer: FC = () => {
       };
 
     return (
-        <div className="min-h-screen w-full flex flex-col *:px-8 *:py-4">
-            <div className="sticky w-full top-0 flex justify-center bg-white/60 backdrop-blur-2xl">
+        <div className="min-h-screen w-full flex flex-col ">
+            <div className="sticky w-full top-0 flex justify-center bg-white/60 backdrop-blur-2xl px-8 py-4">
                 <div className="w-full flex justify-between">
                     <div className="text-xl gradiant-text py-2">
                         Hello {userctx.user?.name}
@@ -69,82 +87,88 @@ const CreateBeer: FC = () => {
                 </div>
             </div>
 
-            <form onSubmit={submit} className="flex flex-1 justify-center">
-                <FieldGroup className="grid max-w-xl grid-cols-2">
-                    <Field>
-                        <div className="relative w-40 aspect-square bg-amber-100 rounded-3xl">
-                            {preview ? (
-                                <img
-                                    className="object-cover aspect-square rounded-3xl"
-                                    src={preview}
-                                    alt="Upload preview"
-                                    />
-                            ) : (
-                                <Plus className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
-                            )}
-                        </div>
-                        <FieldLabel htmlFor="picture">Picture</FieldLabel>
-                        <Input
-                            id="picture"
-                            type="file"
-                            accept="image/*"
-                            name="image"
-                            onChange={handleFileChange}
-                        />
-                        <FieldDescription>Select a picture to upload.</FieldDescription>
-                    </Field>
-                    <Field>
-                        <FieldLabel htmlFor="name">Name</FieldLabel>
-                        <Input id="name" name="name" placeholder="Pilsner" required className="p-6" />
-
-                        <FieldLabel htmlFor="type">Típus</FieldLabel>
-                            <Select name="type" required>
-                              <SelectTrigger id="type" className="p-6">
-                                <SelectValue placeholder="Válassz típust" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="lager">Lager</SelectItem>
-                                <SelectItem value="ipa">IPA</SelectItem>
-                                <SelectItem value="apa">APA</SelectItem>
-                                <SelectItem value="stout">Stout</SelectItem>
-                                <SelectItem value="porter">Porter</SelectItem>
-                              </SelectContent>
-                        </Select>
-
-                        <FieldLabel htmlFor="alcohol">Alkoholtartalom (%)</FieldLabel>
-                        <Input
-                          id="alcohol"
-                          name="alcohol"
-                          type="number"
-                          step="0.1"
-                          min="0"
-                          max="100"
-                          placeholder="5.2"
-                          required
-                          className="p-6"
-                        />
-
-                        <FieldLabel htmlFor="rate">Értékelés (1-5)</FieldLabel>
-                        <Input
-                          id="rate"
-                          name="rate"
-                          type="number"
-                          min="1"
-                          max="10"
-                          placeholder="5"
-                          required
-                          className="p-6"
-                        />
-
-                        <FieldLabel htmlFor="note">Megjegyzés (Opcionális)</FieldLabel>
-                            <Textarea
-                              id="note"
-                              name="note"
-                              placeholder="Írd le a benyomásaidat az ízvilágról..."
-                              className="min-h-25 resize-none"
+            <form onSubmit={submit} className="flex flex-col flex-1 justify-center px-8">
+                <div className="flex justify-center w-full">
+                    <FieldGroup className="grid max-w-xl grid-cols-2">
+                        <Field>
+                            <div className="relative w-40 aspect-square bg-amber-100 rounded-3xl">
+                                {preview ? (
+                                    <img
+                                        className="object-cover aspect-square rounded-3xl"
+                                        src={preview}
+                                        alt="Upload preview"
+                                        />
+                                ) : (
+                                    <Plus className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+                                )}
+                            </div>
+                            <FieldLabel htmlFor="picture">{i18n.localization.picture}</FieldLabel>
+                            <Input
+                                id="picture"
+                                type="file"
+                                accept="image/*"
+                                name="image"
+                                onChange={handleFileChange}
                             />
-                    </Field>
-                </FieldGroup>
+                            <FieldDescription>{i18n.localization.selectPictureToUpload}</FieldDescription>
+                        </Field>
+                        <Field>
+                            <FieldLabel htmlFor="name">{i18n.localization.name}</FieldLabel>
+                            <Input id="name" name="name" placeholder="Pilsner" required className="p-6" />
+
+                            <FieldLabel htmlFor="type">{i18n.localization.type}</FieldLabel>
+                                <Select name="type" required>
+                                  <SelectTrigger id="type" className="p-6">
+                                    <SelectValue placeholder={i18n.localization.selectType} />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="lager">Lager</SelectItem>
+                                    <SelectItem value="ipa">IPA</SelectItem>
+                                    <SelectItem value="apa">APA</SelectItem>
+                                    <SelectItem value="stout">Stout</SelectItem>
+                                    <SelectItem value="porter">Porter</SelectItem>
+                                  </SelectContent>
+                            </Select>
+
+                            <FieldLabel htmlFor="alcohol">{i18n.localization.alcoholContent}</FieldLabel>
+                            <Input
+                              id="alcohol"
+                              name="alcohol"
+                              type="number"
+                              step="0.1"
+                              min="0"
+                              max="100"
+                              placeholder="5.2"
+                              required
+                              className="p-6"
+                            />
+
+                            <FieldLabel htmlFor="rate">{i18n.localization.rate}</FieldLabel>
+                            <Input
+                              id="rate"
+                              name="rate"
+                              type="number"
+                              min="1"
+                              max="10"
+                              placeholder="5"
+                              required
+                              className="p-6"
+                            />
+
+                            <FieldLabel htmlFor="note">{i18n.localization.noteOptional}</FieldLabel>
+                                <Textarea
+                                  id="note"
+                                  name="note"
+                                  placeholder={i18n.localization.notePlaceholder}
+                                  className="min-h-25 resize-none"
+                                />
+                        </Field>
+                    </FieldGroup>
+                </div>
+                <div className="flex justify-center mt-2 space-x-2">
+                    <Button onClick={() => navigate("/app/")} variant="outline" className="p-6 w-40">{i18n.localization.back}</Button>
+                    <Button type="submit" className="p-6 w-40">{i18n.localization.save}</Button>
+                </div>
             </form>
         </div>
     );

@@ -8,7 +8,7 @@ import type { Controller } from "../utils/Types.ts";
 import { FileUploadMiddleware } from "../middlewares/FileUploadMiddleware.ts";
 const BeerRoutes = express.Router();
 
-BeerRoutes.post("/", FileUploadMiddleware.single("url"), CreateBeer as Controller);
+BeerRoutes.post("/", FileUploadMiddleware.single("image"), CreateBeer as Controller);
 
 BeerRoutes.get("/", GetBeers as Controller);
 

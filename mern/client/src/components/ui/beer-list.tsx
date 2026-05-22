@@ -6,11 +6,13 @@ import { I18nContext } from "@/contexts/I18nContext";
 import { Badge } from "./badge";
 import { useNavigate } from "react-router";
 import { Spinner } from "./spinner";
+import { HttpContext } from "@/contexts/HttpContext";
 
 const BeerList: FC = () => {
 
     const i18n = use(I18nContext);
     const beerList = use(BeerListContext);
+    const http = use(HttpContext);
     const navigate = useNavigate();
 
     return (
@@ -22,7 +24,7 @@ const BeerList: FC = () => {
             ) : (
                 beerList.beerList.map((beer) => (
                     <div key={beer.name} className="w-80 h-100 rounded-3xl shadow">
-                        <img src={beer.url || placeholderImage} alt={beer.name} className="w-full h-70 object-cover rounded-t-3xl" />
+                        <img src={http.image(beer.url) || placeholderImage} alt={beer.name} className="w-full h-70 object-cover rounded-t-3xl" />
                         <div className="p-4">
                             <h2 className="text-2xl font-bold">{beer.name}</h2>
 

@@ -19,5 +19,19 @@
     "modify": "Szerkesztés",
     "add": "Hozzáadás",
     "failedToDeleteBeer": "Nem sikerült törölni a sört",
-    "beerDeleted": "Sör törölve"
+    "beerDeleted": "Sör törölve",
+    "successfulSave": "Sikeres mentés!",
+    "errorDuringSave": "Hiba történt a mentés során.",
+    "networkError": "Hálózati hiba történt.",
+    "picture": "Kép",
+    "selectPictureToUpload": "Válassz egy képet a feltöltéshez.",
+    "name": "Név",
+    "type": "Típus",
+    "selectType": "Válassz típust",
+    "alcoholContent": "Alkoholtartalom (%)",
+    "rate": "Értékelés (1-10)",
+    "noteOptional": "Megjegyzés (Opcionális)",
+    "notePlaceholder": "Írd le a benyomásaidat az ízvilágról...",
+    "save": "Mentés",
+    "back": "Vissza"
 }
