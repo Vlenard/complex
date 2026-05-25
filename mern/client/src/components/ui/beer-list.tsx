@@ -24,7 +24,12 @@ const BeerList: FC = () => {
             ) : (
                 beerList.beerList.map((beer) => (
                     <div key={beer.name} className="w-80 h-100 rounded-3xl shadow">
-                        <img src={http.image(beer.url) || placeholderImage} alt={beer.name} className="w-full h-70 object-cover rounded-t-3xl" />
+                        <div className="relative group">
+                            <img src={http.image(beer.url) || placeholderImage} alt={beer.name} className="w-full h-70 object-cover rounded-t-3xl" />
+                            <div className="absolute top-0 left-0 w-full h-full rounded-t-2xl backdrop-blur-2xl bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity p-2">
+                                <p className="text-start font-bold text-sm text-ellipsis">{beer.note}</p>
+                            </div>
+                        </div>
                         <div className="p-4">
                             <h2 className="text-2xl font-bold">{beer.name}</h2>
 

@@ -2,7 +2,7 @@ import { AuthContext } from "@/contexts/AuthContext";
 import { I18nContext } from "@/contexts/I18nContext";
 import { UserContext } from "@/contexts/UserContext";
 import { HttpContext } from "@/contexts/HttpContext";
-import { use, type FC, useState, useEffect, type FormEvent } from "react";
+import { use, type FC, useState, useEffect, type FormEvent, type ChangeEvent } from "react";
 import { Button } from "../ui/button";
 import { LangSelector } from "../ui/lang-selector";
 import { Field, FieldDescription, FieldGroup, FieldLabel } from "../ui/field";
@@ -22,7 +22,7 @@ const CreateBeer: FC = () => {
     const navigate = useNavigate();
 
     const [selectedFile, setSelectedFile] = useState(null);
-    const [preview, setPreview] = useState(null);
+    const [preview, setPreview] = useState<string | null>(null);
 
     const submit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -47,25 +47,25 @@ const CreateBeer: FC = () => {
         }
     };
 
+    const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+        if (!e.target.files || e.target.files.length === 0) {
+          setSelectedFile(null);
+          return;
+        }
+        setSelectedFile(e.target.files[0] as unknown as any);
+    };
+
     useEffect(() => {
         if (!selectedFile) {
-          setPreview(null);
-          return;
+            setPreview(null);
+            return;
         }
 
         const objectUrl = URL.createObjectURL(selectedFile);
         setPreview(objectUrl);
 
         return () => URL.revokeObjectURL(objectUrl);
-      }, [selectedFile]);
-
-      const handleFileChange = (e) => {
-        if (!e.target.files || e.target.files.length === 0) {
-          setSelectedFile(null);
-          return;
-        }
-        setSelectedFile(e.target.files[0]);
-      };
+    }, [selectedFile]);
 
     return (
         <div className="min-h-screen w-full flex flex-col ">

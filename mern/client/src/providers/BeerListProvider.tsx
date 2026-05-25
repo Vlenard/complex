@@ -7,7 +7,7 @@ import { toast } from "sonner";
 
 type BeerListState = {
     list: BeerModel[];
-    query: Pick<BeerModel, "name"> | null;
+    query: Pick<BeerModel, "name">;
     isLoading: boolean;
 };
 
@@ -21,7 +21,7 @@ const BeerListProvider: FC<PropsWithChildren> = (props) => {
         isLoading: false,
     });
 
-    const setQuery = (query: Pick<BeerModel, "name"> | null) => {
+    const setQuery = (query: Pick<BeerModel, "name">) => {
         setBeerListState((prev) => ({ ...prev, query }));
     };
 

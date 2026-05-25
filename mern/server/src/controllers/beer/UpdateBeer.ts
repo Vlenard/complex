@@ -8,9 +8,14 @@ import { Beer } from "../../models/Beer.ts";
  */
 const UpdateBeer = async (req: BeerRequest, res: Response): Promise<void> => {
     try {
+        const updateData: any = { ...req.body };
+        if (req.file) {
+            updateData.url = req.file.path;
+        }
+
         const updatedBeer = await Beer.findOneAndUpdate(
             { _id: req.params.id, owner: req.user.id },
-            { $set: req.body },
+            { $set: updateData },
             { new: true, runValidators: true },
         );
 

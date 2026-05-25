@@ -5,10 +5,10 @@ import GetBeers from "../controllers/beer/GetBeers.ts";
 import UpdateBeer from "../controllers/beer/UpdateBeer.ts";
 import GetBeer from "../controllers/beer/GetBeer.ts";
 import type { Controller } from "../utils/Types.ts";
-import { FileUploadMiddleware } from "../middlewares/FileUploadMiddleware.ts";
+import { ImageUploadMiddleware } from "../middlewares/ImageUploadMiddleware.ts";
 const BeerRoutes = express.Router();
 
-BeerRoutes.post("/", FileUploadMiddleware.single("image"), CreateBeer as Controller);
+BeerRoutes.post("/", ImageUploadMiddleware.single("image"), CreateBeer as Controller);
 
 BeerRoutes.get("/", GetBeers as Controller);
 
@@ -16,6 +16,6 @@ BeerRoutes.get("/:id", GetBeer as Controller);
 
 BeerRoutes.delete("/:id", DeleteBeer as Controller);
 
-BeerRoutes.put("/:id", UpdateBeer as Controller);
+BeerRoutes.put("/:id", ImageUploadMiddleware.single("image"), UpdateBeer as Controller);
 
 export default BeerRoutes;
