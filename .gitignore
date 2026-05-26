@@ -2,3 +2,7 @@
 .DS_Store
 .DS_Store
 mern/server/storage/
+.DS_Store
+.DS_Store
+next/.prettierignore
+next/.prettierrc
