@@ -1,8 +1,13 @@
-import { Document } from "mongoose";
+import type { Document } from "mongoose";
 
-const TransformSchemaOutput = (doc: Document, ret: Record<string, any>) => {
-    const { _id, __v, ...object } = ret;
-    return { id: _id, ...object };
+const TransformSchemaOutput = (
+  doc: Document,
+  ret: Record<string, unknown>,
+): Record<string, unknown> => {
+  const id = ret._id;
+  delete ret._id;
+  delete ret.__v;
+  return { id, ...ret };
 };
 
 export default TransformSchemaOutput;

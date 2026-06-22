@@ -1,49 +1,51 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
-const MONGODB_URI = process.env.MONGODB_URI;
+class Database {
+  private static instance: Database;
+  private connection: typeof mongoose | null = null;
+  private connectionPromise: Promise<typeof mongoose> | null = null;
 
-if (!MONGODB_URI) {
-  throw new Error('Please define the MONGODB_URI environment variable inside .env.local');
-}
+  private constructor() {}
 
-interface GlobalMongoose {
-  conn: typeof mongoose | null;
-  promise: Promise<typeof mongoose> | null;
-}
-
-declare global {
-  var mongoose: GlobalMongoose | undefined;
-}
-
-let cached = global.mongoose;
-
-if (!cached) {
-  cached = global.mongoose = { conn: null, promise: null };
-}
-
-async function connectDB() {
-  if (cached.conn) {
-    return cached.conn;
+  static getInstance(): Database {
+    if (!Database.instance) {
+      Database.instance = new Database();
+    }
+    return Database.instance;
   }
 
-  if (!cached.promise) {
-    const opts = {
-      bufferCommands: false,
-    };
+  async connect(): Promise<typeof mongoose> {
+    if (this.connection) {
+      return this.connection;
+    }
 
-    cached.promise = mongoose.connect(MONGODB_URI!, opts).then((mongooseInstance) => {
-      return mongooseInstance;
-    });
+    if (!this.connectionPromise) {
+      const uri = process.env.MONGODB_URI;
+
+      if (!uri) {
+        throw new Error(
+          "Please define the MONGODB_URI environment variable inside .env.local",
+        );
+      }
+
+      this.connectionPromise = mongoose
+        .connect(uri)
+        .then((conn) => {
+          this.connection = conn;
+          return conn;
+        })
+        .catch((err) => {
+          this.connectionPromise = null;
+          throw err;
+        });
+    }
+
+    return this.connectionPromise;
   }
-
-  try {
-    cached.conn = await cached.promise;
-  } catch (e) {
-    cached.promise = null;
-    throw e;
-  }
-
-  return cached.conn;
 }
 
-export default connectDB;
+const db = Database.getInstance();
+
+export const connectDB = () => db.connect();
+
+export default db;
