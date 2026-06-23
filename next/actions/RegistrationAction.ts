@@ -5,14 +5,23 @@ import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
 
 import { redirect } from "next/navigation";
+import { connectDB } from "../lib/db";
 import { User } from "../models/User";
 
 export default async function RegistrationAction(
+  _: { error?: string },
   formData: FormData,
 ): Promise<{ error?: string }> {
+  await connectDB();
+
   const name = formData.get("name") as string;
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
+  const confirmPassword = formData.get("confirmPassword") as string;
+
+  if (password !== confirmPassword) {
+    return { error: "Passwords do not match" };
+  }
 
   const existingUser = await User.findOne({ email: email.toLowerCase() });
 

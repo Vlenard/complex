@@ -20,16 +20,17 @@ class Database {
     }
 
     if (!this.connectionPromise) {
-      const uri = process.env.MONGODB_URI;
+      const uri = process.env.MONGO_URI as string;
+      const dbName = process.env.MONGO_DB_NAME || "rbeerv3";
 
       if (!uri) {
         throw new Error(
-          "Please define the MONGODB_URI environment variable inside .env.local",
+          "Please define the MONGO_URI environment variable inside .env.local",
         );
       }
 
       this.connectionPromise = mongoose
-        .connect(uri)
+        .connect(uri, { dbName })
         .then((conn) => {
           this.connection = conn;
           return conn;

@@ -5,16 +5,21 @@ import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
+import { connectDB } from "../lib/db";
 import { User } from "../models/User";
 
 export default async function LoginAction(
   _: { error?: string },
   formData: FormData,
 ): Promise<{ error?: string }> {
+  await connectDB();
+
   const email = (formData.get("email") as string).toLowerCase();
   const password = formData.get("password") as string;
 
   const user = await User.findOne({ email });
+
+  console.log(user);
 
   if (!user) {
     return { error: "Invalid email" };
