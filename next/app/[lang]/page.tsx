@@ -1,12 +1,12 @@
-"use client";
-
 import Link from "next/link";
-import { useI18n } from "@/components/i18n-provider";
+import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { LangSelector } from "@/components/ui/lang-selector";
 import Image from "next/image";
 import img from "../../public/landing.png";
 import { Pacifico } from "next/font/google";
+import Auth from "@/lib/Auth";
+import { getLocalization } from "@/lib/i18n";
 
 const pacifico = Pacifico({
   weight: "400",
@@ -14,8 +14,19 @@ const pacifico = Pacifico({
   variable: "--font-pacifico",
 });
 
-export default function Page() {
-  const { localization, language } = useI18n();
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ lang: string }>;
+}) {
+  const { lang } = await params;
+  const isAuthenticated = await Auth.isAuthenticated();
+
+  if (isAuthenticated) {
+    redirect(`/${lang}/app`);
+  }
+
+  const localization = await getLocalization(lang);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -37,10 +48,10 @@ export default function Page() {
             <p className="mt-5">{localization.slogan}</p>
             <div className="flex space-x-2 mt-5">
               <Button className="px-4" asChild>
-                <Link href={`/${language}/sign-in`}>{localization.signIn}</Link>
+                <Link href={`/${lang}/sign-in`}>{localization.signIn}</Link>
               </Button>
               <Button className="px-4" asChild>
-                <Link href={`/${language}/sign-up`}>{localization.signUp}</Link>
+                <Link href={`/${lang}/sign-up`}>{localization.signUp}</Link>
               </Button>
             </div>
           </div>
