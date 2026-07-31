@@ -8,6 +8,8 @@ import { redirect } from "next/navigation";
 import { connectDB } from "../lib/db";
 import { User } from "../models/User";
 
+const BCRYPT_HASH_PATTERN = /^\$2[aby]\$\d{2}\$/;
+
 export default async function LoginAction(
   _: { error?: string },
   formData: FormData,
@@ -19,16 +21,22 @@ export default async function LoginAction(
 
   const user = await User.findOne({ email });
 
-  console.log(user);
-
   if (!user) {
     return { error: "Invalid email" };
   }
 
-  const passwordMatch = await bcrypt.compare(password, user.password);
+  const isHashed = BCRYPT_HASH_PATTERN.test(user.password);
+  const passwordMatches = isHashed
+    ? await bcrypt.compare(password, user.password)
+    : password === user.password;
 
-  if (!passwordMatch) {
+  if (!passwordMatches) {
     return { error: "Invalid password" };
+  }
+
+  if (!isHashed) {
+    user.password = await bcrypt.hash(password, 10);
+    await user.save();
   }
 
   const token = jwt.sign(

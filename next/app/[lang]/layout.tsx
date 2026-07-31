@@ -2,6 +2,7 @@ import { Geist_Mono, Inter } from "next/font/google"
 
 import "../globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
+import { Toaster } from "@/components/ui/sonner";
 import { cn } from "@/lib/utils";
 import { getLocalization } from "@/lib/i18n";
 import { I18nProvider, Language } from "@/components/i18n-provider";
@@ -33,6 +34,7 @@ export default async function LocaleLayout({
           <I18nProvider language={lang as Language} localization={localization}>
             {children}
           </I18nProvider>
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>

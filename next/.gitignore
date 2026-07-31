@@ -18,6 +18,9 @@
 # production
 /build
 
+# uploaded beer images
+/public/storage
+
 # misc
 .DS_Store
 *.pem

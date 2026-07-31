@@ -1,8 +1,11 @@
-export default function BeerPage({ params }: { params: { id: string } }) {
-  return (
-    <div>
-      <h1>Beer {params.id}</h1>
+import { redirect } from "next/navigation";
 
-    </div>
-  );
+export default async function BeerPage({
+  params,
+}: {
+  params: Promise<{ lang: string; id: string }>;
+}) {
+  const { lang, id } = await params;
+
+  redirect(`/${lang}/app/beer/${id}/edit`);
 }

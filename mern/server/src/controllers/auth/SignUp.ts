@@ -1,3 +1,4 @@
+import bcrypt from "bcrypt";
 import type { Request, Response } from "express";
 import { User } from "../../models/User.ts";
 import Bearer from "../../services/Bearer.ts";
@@ -12,7 +13,8 @@ const SignUp = async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
-        const newUser = new User({ name, email, password });
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const newUser = new User({ name, email, password: hashedPassword });
         await newUser.save();
 
         const token = Bearer.sign({ id: newUser._id, name: newUser.name, email: newUser.email });
