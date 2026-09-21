@@ -1,0 +1,11 @@
+# Documentation / Notes
+docs/
+
+# Benchmark dependencies & results
+benchmarks/node_modules/
+benchmarks/results/
+
+# OS files
+.DS_Store
+Diplomamunka formai útmutató.pdf
+Váradi_Bence_Lénárd_FJYXPC_komplexBSc.doc

@@ -1,0 +1,17 @@
+{
+  "name": "benchmarks",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Benchmark and testing suite for MERN vs Next.js comparison",
+  "type": "module",
+  "scripts": {
+    "seed": "node scripts/seeder.js",
+    "bench:api": "node scripts/run_api_benchmarks.js",
+    "lighthouse": "lighthouse",
+    "autocannon": "autocannon"
+  },
+  "dependencies": {
+    "autocannon": "^8.0.0",
+    "lighthouse": "^12.4.0"
+  }
+}
