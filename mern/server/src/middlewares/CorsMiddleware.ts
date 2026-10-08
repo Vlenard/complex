@@ -6,7 +6,8 @@ const corsMiddleware = () => {
 
     return cors(nodeEnv === "development" ?
         {
-            origin: `http://localhost:${process.env.FRONTEND_PORT}`, // frontend
+            origin: `http://localhost:${process.env.FRONTEND_PORT || 5173}`, // frontend
+            credentials: true,
             methods: ["GET", "POST", "PUT", "DELETE"],
         }
         :

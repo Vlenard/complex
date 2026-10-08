@@ -22,12 +22,24 @@ const HttpProvider: FC<PropsWithChildren> = ({ children }) => {
 
         const response = await fetch(API_URL + url, {
             ...options,
-            headers
+            credentials: "include",
+            headers,
         });
 
         if (!response.ok) {
-            const data = await response.json();
-            throw new Error(data.message || "Something went wrong");
+            let message = "Something went wrong";
+            try {
+                const data = await response.json();
+                message = data.message || message;
+            } catch {
+                // Ignore if response body is not json
+            }
+
+            if (response.status === 401 || response.status === 403) {
+                window.dispatchEvent(new CustomEvent("auth:unauthorized"));
+            }
+
+            throw new Error(message);
         }
 
         return response;

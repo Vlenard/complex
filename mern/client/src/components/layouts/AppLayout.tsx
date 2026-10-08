@@ -14,6 +14,10 @@ const AppLayout: FC = () => {
         }
     }, [auth.status, navigate]);
 
+    if (auth.status === "loading") {
+        return null;
+    }
+
     return (
         auth.status === "authenticated" ? (
             <UserProvider>

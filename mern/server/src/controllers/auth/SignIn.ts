@@ -33,8 +33,21 @@ const SignIn = async (req: Request, res: Response): Promise<void> => {
 
         const token = Bearer.sign({ id: user._id, name: user.name, email: user.email });
 
+        res.cookie("auth_token", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "lax",
+            maxAge: 24 * 60 * 60 * 1000,
+            path: "/",
+        });
+
         res.status(200).json({
-            token,
+            message: "Sign in successful",
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+            },
         });
     } catch (error) {
         res.status(500).json({ message: "Internal server error", error });

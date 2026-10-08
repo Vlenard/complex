@@ -2,7 +2,6 @@ import { useState, type PropsWithChildren, type FC, useEffect, use } from "react
 import { AuthContext, type AuthStatus, type SignInPayload, type SignUpPayload } from "@/contexts/AuthContext";
 import { HttpContext } from "@/contexts/HttpContext";
 import { I18nContext } from "@/contexts/I18nContext";
-import { jwtDecode } from "jwt-decode";
 import { toast } from "sonner";
 
 type AuthState = {
@@ -10,46 +9,56 @@ type AuthState = {
     token: string | null;
 };
 
-const TOKEN_KEY = "auth_token";
-
 const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
     const i18n = use(I18nContext);
     const http = use(HttpContext);
 
-    const getValidToken = (): string | null => {
-        const token = localStorage.getItem(TOKEN_KEY);
-        if (!token) return null;
-
-        try {
-            // Use jwtDecode instead of jwt.decode
-            const decoded = jwtDecode<{ exp?: number }>(token);
-
-            if (!decoded || !decoded.exp) {
-                localStorage.removeItem(TOKEN_KEY);
-                return null;
-            }
-
-            const currentTime = Math.floor(Date.now() / 1000);
-            if (decoded.exp < currentTime) {
-                toast.warning(i18n.localization.tokenExpired);
-                localStorage.removeItem(TOKEN_KEY);
-                return null;
-            }
-
-            return token;
-        } catch (error) {
-            // This catches malformed tokens that can't be decoded
-            localStorage.removeItem(TOKEN_KEY);
-            return null;
-        }
-    };
-
-    const [authState, setAuthState] = useState<AuthState>(() => {
-        const validToken = getValidToken();
-        return validToken
-            ? { status: "authenticated", token: validToken }
-            : { status: "unauthenticated", token: null };
+    const [authState, setAuthState] = useState<AuthState>({
+        status: "loading",
+        token: null,
     });
+
+    useEffect(() => {
+        let isMounted = true;
+
+        const checkAuth = async () => {
+            try {
+                const response = await http.fetch("/user", { method: "GET" });
+                if (response.ok && isMounted) {
+                    setAuthState({ status: "authenticated", token: null });
+                    return;
+                }
+            } catch {
+                // Not authenticated or network error
+            }
+
+            if (isMounted) {
+                setAuthState({ status: "unauthenticated", token: null });
+            }
+        };
+
+        checkAuth();
+
+        return () => {
+            isMounted = false;
+        };
+    }, []);
+
+    useEffect(() => {
+        const handleUnauthorized = () => {
+            setAuthState((prev) => {
+                if (prev.status === "authenticated") {
+                    toast.warning(i18n.localization.tokenExpired);
+                }
+                return { status: "unauthenticated", token: null };
+            });
+        };
+
+        window.addEventListener("auth:unauthorized", handleUnauthorized);
+        return () => {
+            window.removeEventListener("auth:unauthorized", handleUnauthorized);
+        };
+    }, [i18n]);
 
     const signIn = async (payload: SignInPayload): Promise<void> => {
         try {
@@ -58,16 +67,14 @@ const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
                 body: JSON.stringify(payload),
             });
 
-            const data = await response.json();
-            if (data.token) {
-                localStorage.setItem(TOKEN_KEY, data.token);
+            if (response.ok) {
                 setAuthState({
                     status: "authenticated",
-                    token: data.token,
+                    token: null,
                 });
             }
         } catch (error) {
-            console.log(error)
+            console.error("Sign in failed:", error);
             toast.error(i18n.localization.failedToSignIn);
         }
     };
@@ -79,31 +86,32 @@ const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
                 body: JSON.stringify(payload),
             });
 
-            const data = await response.json();
-            if (data.token) {
-                localStorage.setItem(TOKEN_KEY, data.token);
+            if (response.ok) {
                 setAuthState({
                     status: "authenticated",
-                    token: data.token,
+                    token: null,
                 });
             }
         } catch (error) {
+            console.error("Sign up failed:", error);
             toast.error(i18n.localization.failedToSignUp);
-            console.log(error)
         }
     };
 
-    const signOut = () => {
-        localStorage.removeItem(TOKEN_KEY); // Always clear storage on sign out
-        setAuthState({
-            status: "unauthenticated",
-            token: null,
-        });
+    const signOut = async () => {
+        try {
+            await http.fetch("/auth/sign-out", {
+                method: "POST",
+            });
+        } catch (error) {
+            console.error("Sign out failed:", error);
+        } finally {
+            setAuthState({
+                status: "unauthenticated",
+                token: null,
+            });
+        }
     };
-
-    useEffect(() => {
-        http.setBearerToken(authState.token ?? "");
-    }, [authState.token]);
 
     return (
         <AuthContext.Provider value={{
