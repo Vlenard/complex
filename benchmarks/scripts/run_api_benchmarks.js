@@ -22,6 +22,7 @@ async function runMernBenchmarks() {
 
   // 1. Sign in
   const loginTimes = [];
+  let cookieHeader = null;
   let token = null;
 
   for (let i = 0; i < ITERATIONS; i++) {
@@ -34,14 +35,24 @@ async function runMernBenchmarks() {
     const t1 = performance.now();
     loginTimes.push(t1 - t0);
 
+    const setCookie = res.headers.get("set-cookie");
+    if (setCookie) {
+      cookieHeader = setCookie.split(";")[0];
+    }
     if (res.ok) {
-      const data = await res.json();
-      token = data.token;
+      try {
+        const data = await res.json();
+        if (data.token) token = data.token;
+      } catch (_) {}
     }
   }
 
   const loginStats = calculateStats(loginTimes);
   console.log(`MERN Sign-In: Mean=${loginStats.mean.toFixed(2)}ms, p50=${loginStats.p50.toFixed(2)}ms, p95=${loginStats.p95.toFixed(2)}ms, stdDev=${loginStats.stdDev.toFixed(2)}ms`);
+
+  const authHeaders = {};
+  if (cookieHeader) authHeaders["Cookie"] = cookieHeader;
+  if (token) authHeaders["Authorization"] = `Bearer ${token}`;
 
   // 2. Get 20 beers
   const getBeersTimes = [];
@@ -49,7 +60,7 @@ async function runMernBenchmarks() {
   for (let i = 0; i < ITERATIONS; i++) {
     const t0 = performance.now();
     const res = await fetch("http://localhost:3000/api/beer", {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: authHeaders,
     });
     const t1 = performance.now();
     getBeersTimes.push(t1 - t0);
@@ -68,7 +79,7 @@ async function runMernBenchmarks() {
   for (let i = 0; i < ITERATIONS; i++) {
     const t0 = performance.now();
     const res = await fetch("http://localhost:3000/api/beer?name=IPA", {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: authHeaders,
     });
     const t1 = performance.now();
     searchTimes.push(t1 - t0);
@@ -89,16 +100,42 @@ async function runNextBenchmarks() {
   console.log("=== RUNNING NEXT.JS BENCHMARKS (PORT 3001) ===");
   console.log("=============================================");
 
+  // Resolve dynamic Server Action IDs
+  let getBeersActionId = "40f08102702dbc08f53a3006fb8a47d858bc133157";
+  try {
+    const fs = await import("fs");
+    const manifestPath = "../next/.next/server/server-reference-manifest.json";
+    if (fs.existsSync(manifestPath)) {
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf-8"));
+      for (const [id, meta] of Object.entries(manifest.node || {})) {
+        if (meta.filename === "actions/GetBeersAction.ts") {
+          getBeersActionId = id;
+          break;
+        }
+      }
+    }
+  } catch (err) {
+    console.warn("Could not read server-reference-manifest.json:", err.message);
+  }
+
   // 1. Sign in via native Next.js form POST
   const loginTimes = [];
   let cookieHeader = null;
 
   for (let i = 0; i < ITERATIONS; i++) {
+    const signinPageRes = await fetch("http://localhost:3001/en/sign-in");
+    const html = await signinPageRes.text();
+    const match10 = html.match(/name="\$ACTION_1:0" value="([^"]+)"/);
+    const matchKey = html.match(/name="\$ACTION_KEY" value="([^"]+)"/);
+
+    const action10 = match10 ? match10[1].replace(/&quot;/g, "\"") : '{"id":"60ec12203bae8d497a24bea0facc11bd56883902d8","bound":"$@1"}';
+    const actionKey = matchKey ? matchKey[1] : "kcfaf34d879453a685fb8647fca88c801";
+
     const formData = new FormData();
     formData.append("$ACTION_REF_1", "");
-    formData.append("$ACTION_1:0", '{"id":"6064543ddff884a80ea2d66433eb619dfc2ea28554","bound":"$@1"}');
+    formData.append("$ACTION_1:0", action10);
     formData.append("$ACTION_1:1", "[{}]");
-    formData.append("$ACTION_KEY", "kcfaf34d879453a685fb8647fca88c801");
+    formData.append("$ACTION_KEY", actionKey);
     formData.append("email", "benchmark@test.com");
     formData.append("password", "password123");
 
@@ -141,7 +178,7 @@ async function runNextBenchmarks() {
       method: "POST",
       headers: {
         Cookie: cookieHeader,
-        "Next-Action": "406b7eb1b4e0cae6d6c25e522d31d63cee5456ac64",
+        "Next-Action": getBeersActionId,
         "Content-Type": "text/plain;charset=UTF-8",
         Accept: "text/x-component",
       },
@@ -161,7 +198,7 @@ async function runNextBenchmarks() {
       method: "POST",
       headers: {
         Cookie: cookieHeader,
-        "Next-Action": "406b7eb1b4e0cae6d6c25e522d31d63cee5456ac64",
+        "Next-Action": getBeersActionId,
         "Content-Type": "text/plain;charset=UTF-8",
         Accept: "text/x-component",
       },
